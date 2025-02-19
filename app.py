@@ -97,9 +97,16 @@ def ask_question():
     if not user_question:
         return jsonify({"error": "No question provided"}), 400
     
+    # First try to get an answer from Gemini
     answer = ask_gemini(user_question, conversation_history)
+    
+    # If Gemini fails, try Wikipedia
     if not answer:
         answer = search_wikipedia(user_question)
+    
+    # If both Gemini and Wikipedia fail, provide a default response
+    if not answer:
+        answer = "Sorry, I couldn't find an answer to your question."
     
     conversation_history.append({"user": user_question, "ai": answer})
     if len(conversation_history) > 5:
